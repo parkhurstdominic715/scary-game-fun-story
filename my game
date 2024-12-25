@@ -1,0 +1,112 @@
+import pygame
+import random
+
+# Initialize Pygame
+pygame.init()
+
+# Window Setup
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Text Adventure Game")
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+
+# Fonts
+font = pygame.font.SysFont('Arial', 24)
+small_font = pygame.font.SysFont('Arial', 18)
+
+# Game Variables
+stage = 1
+money = 0
+inventory = []
+random_words = []
+stories = []
+is_drawing = False
+ball_position = [400, 300]
+
+# Function to display text
+def display_text(text, y_offset=0):
+    lines = text.split('\n')
+    for i, line in enumerate(lines):
+        text_surface = font.render(line, True, BLACK)
+        screen.blit(text_surface, (20, 100 + y_offset + (i * 30)))
+
+# Function to handle random stories and words
+def generate_random_words_and_stories():
+    global random_words, stories
+    random_words = random.sample(["apple", "house", "dog", "sky", "sun", "moon", "book", "star", "ball", "light"], 10)
+    stories = [
+        f"A man walked down the street with a {random.choice(random_words)} in his hand.",
+        f"Under the {random.choice(random_words)} tree, a dog barked loudly.",
+        f"The moonlight reflected off the {random.choice(random_words)} as the man sat and pondered."
+    ]
+
+# Main Game Loop
+running = True
+while running:
+    screen.fill(WHITE)
+    display_text("Text Adventure Game", 0)
+
+    # Event handling
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:  # Press space to go to next stage
+                if stage == 1:
+                    money += 2.30  # You get 2.30 by buying coffee and crisps
+                    stage = 2
+                elif stage == 2:
+                    money += 5.00  # Selling chestnuts for money
+                    stage = 3
+                elif stage == 3:
+                    stage = 4
+                elif stage == 4:
+                    stage = 5
+                elif stage == 5:
+                    generate_random_words_and_stories()
+                    stage = 6
+                elif stage == 6:
+                    stage = 7
+                elif stage == 7:
+                    stage = 8
+            if event.key == pygame.K_RETURN:
+                if stage == 8:
+                    stage = 9
+
+    # Stage-based display
+    if stage == 1:
+        display_text("You buy coffee for 1.50 and crisps for 0.80. Press space to continue.")
+    elif stage == 2:
+        display_text("You see Jesus at the church. Pick up chestnuts and sell them. Press space to continue.")
+    elif stage == 3:
+        display_text("You sell chestnuts to grannies in red tops. You've earned enough to buy a house. Press space to continue.")
+    elif stage == 4:
+        display_text("You buy a house. Now, you tidy the house and put objects in the garage. Press space to continue.")
+    elif stage == 5:
+        display_text("You summon the spirits of the house. Press space to make coffee and draw a salt triangle.")
+    elif stage == 6:
+        display_text("You summon the spirits of the house and draw a salt triangle. Press space to play with the ball.")
+    elif stage == 7:
+        display_text("You play with the ball. Words appear on the screen. Press space to continue.")
+        display_text("\n".join(stories), 200)
+        display_text("Random words: " + ", ".join(random_words), 400)
+    elif stage == 8:
+        display_text("The person cries: 'Mary, Mary, Mark my words!' Press space to end.")
+    elif stage == 9:
+        display_text("Game Over.", 500)
+
+    # Drawing the ball (stage 6)
+    if stage == 6 and not is_drawing:
+        pygame.draw.circle(screen, RED, ball_position, 30)
+
+    # Update screen
+    pygame.display.flip()
+
+    # Frame rate
+    pygame.time.Clock().tick(30)
+
+pygame.quit()
